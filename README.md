@@ -3,11 +3,10 @@
 A toy lisp interpreter that I wrote while learning Clojure, it's heavily influenced by Clojure
 but not fully Clojure compatible.. yet.
 
-It uses mori's data structures under the hood.
-<a href="https://github.com/swannodette/mori">
+It uses [mori's data structures](https://github.com/swannodette/mori) under the hood.
 
-It is also heavily influenced by Peter Norvig's How to Write a Lisp Interpreter in Python
-<a href="http://norvig.com/lispy.html">
+
+It is also heavily influenced by Peter Norvig's [How to Write a Lisp Interpreter in Python](http://norvig.com/lispy.html)
 
 
 To run
