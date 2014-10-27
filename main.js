@@ -1,3 +1,4 @@
+var fs = require('fs');
 var std = require('./std.js').std;
 var op = require('./operators.js').operators;
 var Environment = require('./environment.js').Environment;
@@ -12,7 +13,8 @@ var addGlobals = function(env){
 	'count': std.count, 'conj': std.conj, 'cons': std.cons, 'first': std.first,
 	'rest': std.rest, 'list': std.list, 'list?': std.islist, 'vector': std.vector,
 	'vector?': std.isvector, 'hash-map': std.hashmap, 'map?': std.ishashmap,
-	'set': std.set, 'set?': std.isset, 'sorted-set': std.sortedset
+	'set': std.set, 'set?': std.isset, 'sorted-set': std.sortedset, 'eval': eval,
+	'print': console.log
     });
 
     return env;
@@ -114,7 +116,7 @@ var atom = function(token){
   
 }   
 var readFromTokens = function(tokens){
-    if(tokens.length === 0) throw new Error("unexpected EOF while reading")
+    if(tokens.length === 0) throw new Error("unexpected EOF while reading, probably unbalanced parens")
 
     var token = tokens.shift();
 
@@ -171,4 +173,23 @@ var repl = function(){
     });
 }
 
-repl();
+
+var fileInput = function(){
+    var file = process.argv[2];
+    fs.readFile(file, 'utf8', function(err, data){
+	if(err) console.log(err);
+	data = "(do " + data + ")";
+	console.log(tokenise(data));
+	console.log(read(data));
+	console.log(eval(read(data), globalEnv));
+    })
+};
+
+var s = process.argv[2] + "";
+if(s === "repl"){
+    repl();
+}else{
+    fileInput();
+}
+
+

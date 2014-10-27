@@ -14,8 +14,12 @@ function Environment(parms, args, outer){
 Environment.prototype.find = function(v){
     if (this.env[v]){
 	return this.env;
-    } else {
+    }
+    else if(this.outer.env[v]) {
 	return this.outer.find(v);
+    } else {
+	console.log(this.env);
+	throw new Error("Error while trying to find environment");
     }
 };
 
