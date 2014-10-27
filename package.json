@@ -1,0 +1,15 @@
+{
+  "name": "clj-js",
+  "version": "0.0.0",
+  "description": "Clojure in Javascript",
+  "main": "",
+  "dependencies": {
+    "mori": "*"
+  },
+  "devDependencies": {
+  },
+  "scripts": {
+
+  },
+  "author": "Joe Attueyi"
+}
