@@ -1,3 +1,2 @@
-(loop [cnt 10 acc 1]
-      (if (= cnt 0) acc
-      	       	  (recur (- cnt 1) (+ acc 1))))
+(loop [n 10] (> n 1)
+	(do (print n) (set! n (- n 1)))) 

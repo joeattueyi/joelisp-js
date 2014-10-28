@@ -3,6 +3,7 @@ var std = require('./std.js').std;
 var op = require('./operators.js').operators;
 var Environment = require('./environment.js').Environment;
 var utils = require('./utils.js').utils;
+var dfs = require('./DFS.js').dfs;
 
 
 var addGlobals = function(env){
@@ -61,60 +62,80 @@ var eval = function(expr, env){
 	}
     }
 
+    else if(expr[0] === 'rx'){
+	var depGraph = {};
+	for(var i=1; i<expr.length; i++){
+	    if(expr[i][0] === "def" || expr[i][0] === "set!"){
+		depGraph[expr[i][1]] = Object.prototype.toString.call(expr[i][2]) === "[object Array]"? expr[i][2] : [expr[i][2]];
+	    }
+	}
+
+	console.log(depGraph);
+
+	var workingDep = {};
+	Object.keys(depGraph).forEach(function(el){
+	    workingDep[el] = depGraph[el].filter(function(ela){ return depGraph[ela];});
+	});
+
+	console.log(workingDep);
+	var dfsOrder = dfs(workingDep).order;
+
+	console.log(dfsOrder);
+
+
+	var newExpr = expr.slice(1).sort(function(a, b){
+	    if(dfsOrder.indexOf(a[1]) < dfsOrder.indexOf(b[1])){
+		return -1;
+	    }
+	    if(dfsOrder.indexOf(a[1]) > dfsOrder.indexOf(b[1])){
+		return 1;
+	    }
+	    return 0;
+	});
+
+			   
+	var _val; 
+	for(var i=0; i<newExpr.length; i++){
+	    
+	    _val = eval(newExpr[i], env);
+	    
+	}
+	return _val;
+    }
+
     else if(expr[0] === 'do'){
 	for(var i=1; i<expr.length; i++){
 	    var _val = eval(expr[i], env);
 	}
-	return _val
+	return _val;
     }
 
     else if(expr[0] === 'loop'){
+	//loop  bindings test body (loop [n 5] (= n 3) (- n 1))
 	var bindings = expr[1];
-	var body = expr[2];
+	var test = expr[2];
+	var body = expr[3];
 	if(bindings.length % 2 !== 0) throw new Error("Bindings are not Even");
-	var newEnv = new Environment(null,null,env);
-	var localVars = []
+	var newEnv = new Environment(null, null, env);
+
 	for(var i=0; i<bindings.length; i+=2){
-	    newEnv.env[bindings[i]] = eval(bindings[i+1], env);
-	    localVars.push(bindings[i]);
+	    newEnv.env[bindings[i]] = eval(bindings[i+1], newEnv);
 	}
-	console.log(">>>>><<<>><<><>");
-	console.log(newEnv.env);
-	var unEvaledBody = body;
-	var evaledBody = eval(body, newEnv);
-	var evaledRecur = [];
+	var evaled;
 
-
-		
-	while(evaledBody[0] === "recur" ){
-	    var shortest = evaledBody.slice(1).length < localVars.length? evaledBody.slice(1) : localVars;
-	    for(var i=0; i<shortest.length; i++){
-		//console.log(evaledBody, localVars);
-		newEnv.env[localVars[i]] = evaledRecur[i] = eval(evaledBody.slice(1)[i], env);
-		
-		//console.log(newEnv.env);
-	    }
-	    var newExpr = [];
-	    newExpr[0] = expr[0];
-	    newExpr[1] = utils.interleave(localVars, evaledRecur);
-	    newExpr[2] = evaledBody;
-
-	    console.log("#@#@#@@#@#@##@@@@######@##");
-	    console.log(evaledBody);
-	    console.log(newEnv.env);
-	    console.log(newExpr);
-	    console.log("#@#@#@@#@#@##@@@@######@##");
-	    evaledBody = eval(newExpr, env);
-	    
-	} 
-	console.log(evaledBody);
-	return prick;	
-    }
-
-    else if(expr[0] === 'recur'){
-	return expr
-    }
+	while(eval(test, newEnv)){
+	    evaled = eval(body, newEnv);
+	    //console.log(evaled);
+	}
 	
+    }
+
+    else if(expr[0] === "set!"){
+	//(set! a 10)
+	var _var = expr[1];
+	var newExpr = expr[2];
+	env.find(_var)[_var] = eval(newExpr, env);
+    }
 
     else if(expr[0] === 'let'){
 	//(let [x exp] exp)

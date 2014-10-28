@@ -1,5 +1,5 @@
 
-module.exports.go = function(al){
+module.exports.dfs = function(al){
     
     var parent = {};
     var order = [];

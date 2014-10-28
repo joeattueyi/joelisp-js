@@ -1,13 +1,16 @@
+(rx 
+    (def c (+ a b))
+    (def d (* a b c))
+    (def b (+ a 1))
+    (def a 1)
+    (set! a 100)
+   )
+    
+(print a)
+(print b)
+(print c)
+(print d)
 
-(def a 1)
-(def b (+ a 1))
-(def c (+ a b))
-(print a)
-(print b)
-(print c)
-(def a 2)
-(print a)
-(print b)
-(print c)
+
 
 
