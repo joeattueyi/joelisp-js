@@ -1,0 +1,13 @@
+
+(def a 1)
+(def b (+ a 1))
+(def c (+ a b))
+(print a)
+(print b)
+(print c)
+(def a 2)
+(print a)
+(print b)
+(print c)
+
+

@@ -19,7 +19,7 @@ Environment.prototype.find = function(v){
 	return this.outer.find(v);
     } else {
 	console.log(this.env);
-	throw new Error("Error while trying to find environment");
+	throw new Error("Error while trying to find environment for "+ v );
     }
 };
 

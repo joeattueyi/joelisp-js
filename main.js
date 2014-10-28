@@ -39,7 +39,7 @@ var eval = function(expr, env){
 	var alt = expr[3];
 	if(eval(test, env)){
 	    return eval(conseq, env);
-	}else {
+	}else if(alt !== undefined){
 	    return eval(alt, env);
 	}
     }
@@ -67,6 +67,54 @@ var eval = function(expr, env){
 	}
 	return _val
     }
+
+    else if(expr[0] === 'loop'){
+	var bindings = expr[1];
+	var body = expr[2];
+	if(bindings.length % 2 !== 0) throw new Error("Bindings are not Even");
+	var newEnv = new Environment(null,null,env);
+	var localVars = []
+	for(var i=0; i<bindings.length; i+=2){
+	    newEnv.env[bindings[i]] = eval(bindings[i+1], env);
+	    localVars.push(bindings[i]);
+	}
+	console.log(">>>>><<<>><<><>");
+	console.log(newEnv.env);
+	var unEvaledBody = body;
+	var evaledBody = eval(body, newEnv);
+	var evaledRecur = [];
+
+
+		
+	while(evaledBody[0] === "recur" ){
+	    var shortest = evaledBody.slice(1).length < localVars.length? evaledBody.slice(1) : localVars;
+	    for(var i=0; i<shortest.length; i++){
+		//console.log(evaledBody, localVars);
+		newEnv.env[localVars[i]] = evaledRecur[i] = eval(evaledBody.slice(1)[i], env);
+		
+		//console.log(newEnv.env);
+	    }
+	    var newExpr = [];
+	    newExpr[0] = expr[0];
+	    newExpr[1] = utils.interleave(localVars, evaledRecur);
+	    newExpr[2] = evaledBody;
+
+	    console.log("#@#@#@@#@#@##@@@@######@##");
+	    console.log(evaledBody);
+	    console.log(newEnv.env);
+	    console.log(newExpr);
+	    console.log("#@#@#@@#@#@##@@@@######@##");
+	    evaledBody = eval(newExpr, env);
+	    
+	} 
+	console.log(evaledBody);
+	return prick;	
+    }
+
+    else if(expr[0] === 'recur'){
+	return expr
+    }
+	
 
     else if(expr[0] === 'let'){
 	//(let [x exp] exp)
